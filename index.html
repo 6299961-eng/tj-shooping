@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>TJ Shopping - Colección Completa 2026</title>
+    <style>
+        /* OPTIMIZACIÓN MÓVIL (Añadir al final del <style>) */
+@media (max-width: 600px) {
+    body { padding-top: 100px; } /* Más espacio para el buscador en móvil */
+    
+    header { 
+        flex-direction: column; 
+        height: auto; 
+        padding: 10px;
+    }
+
+    .search-bar { 
+        width: 90%; 
+        margin: 10px 0; 
+        order: 3; /* El buscador baja al final del header */
+    }
+
+    .nav-tools { 
+        width: 100%; 
+        justify-content: space-around; 
+        margin-bottom: 5px;
+    }
+
+    .hero-banner .tj { font-size: 40px; } /* Título más pequeño en móvil */
+
+    .grid { 
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+        gap: 10px; 
+        padding: 5px;
+    }
+
+    .card img { height: 140px; }
+    .card h3 { font-size: 14px; height: 40px; overflow: hidden; }
+
+    .view-section { padding: 15px; }
+
+    #detail-content { 
+        flex-direction: column; 
+        align-items: center; 
+        gap: 20px; 
+    }
+
+    #detail-content img { width: 100% !important; max-width: 280px; }
+
+    table { font-size: 12px; } /* Tablas de carrito/historial más legibles */
+}
+
+        :root { --amz-dark: #131921; --amz-orange: #febd69; --amz-yellow: #ffd814; --amz-btn: #ffa41c; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #eaeded; padding-top: 70px; background-size: cover; background-attachment: fixed; }
+
+        header { 
+            background: var(--amz-dark); color: white; padding: 10px 20px; 
+            position: fixed; top: 0; width: 100%; display: flex; 
+            align-items: center; justify-content: space-between; z-index: 1000; box-sizing: border-box;
+        }
+        .logo-nav { font-size: 22px; font-weight: bold; color: var(--amz-orange); cursor: pointer; min-width: 150px; }
+        .search-bar { flex: 1; display: flex; max-width: 600px; margin: 0 20px; }
+        .search-bar input { width: 100%; padding: 10px; border: none; border-radius: 4px 0 0 4px; outline: none; }
+        .search-btn { background: var(--amz-orange); border: none; padding: 10px 15px; border-radius: 0 4px 4px 0; cursor: pointer; }
+        .nav-tools { display: flex; gap: 20px; align-items: center; min-width: 250px; justify-content: flex-end; }
+        .nav-link { cursor: pointer; font-size: 14px; font-weight: bold; color: white; text-decoration: none; }
+
+        .hero-banner {
+            background: rgba(0,0,0,0.6);
+            height: 200px; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; color: white; border-bottom: 5px solid var(--amz-orange);
+        }
+        .hero-banner .tj { font-size: 70px; font-weight: 200; margin: 0; line-height: 0.8; }
+
+        .container { max-width: 1600px; margin: 20px auto; padding: 0 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        
+        .card { background: white; padding: 15px; border-radius: 8px; border: 1px solid #ddd; display: flex; flex-direction: column; transition: 0.2s; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+        .card img { width: 100%; height: 180px; object-fit: contain; background: #f8f8f8; border-radius: 4px; cursor: pointer; }
+
+        .price { color: #B12704; font-size: 18px; font-weight: bold; }
+        .stock-tag { font-size: 12px; color: #007600; font-weight: bold; }
+        .stock-out { color: #B12704; }
+
+        .view-section { background: white; padding: 40px; border-radius: 8px; border: 1px solid #ddd; min-height: 500px; }
+        .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .auth-card { background: white; padding: 30px; border-radius: 12px; width: 340px; text-align: center; }
+        .auth-card input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+
+        button { cursor: pointer; border-radius: 20px; border: 1px solid #a88734; padding: 10px; font-weight: bold; }
+        .btn-yellow { background: var(--amz-yellow); width: 100%; border-color: #FCD200; margin-bottom: 5px; }
+        .btn-orange { background: var(--amz-btn); width: 100%; border-color: #FF8F00; }
+        
+        .hidden { display: none !important; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+        
+        /* Estilos Historial */
+        .historial-item { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 8px; background: #f9f9f9; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-nav" onclick="mostrarSeccion('shop')">TJ SHOPPING</div>
+    <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Buscar productos..." onkeyup="filtrar()">
+        <button class="search-btn">🔍</button>
+    </div>
+    <div class="nav-tools">
+        <div id="nav-user-info" style="font-size: 13px;"></div>
+        <div class="nav-link" onclick="mostrarSeccion('history')">📜 Historial</div>
+        <div class="nav-link" onclick="mostrarSeccion('cart')">🛒 Carrito (<span id="cart-count">0</span>)</div>
+    </div>
+</header>
+
+<div id="auth-overlay" class="auth-overlay">
+    <div class="auth-card">
+        <h2 id="auth-title">Crear Cuenta</h2>
+        <input type="text" id="auth-user" placeholder="Usuario">
+        <input type="password" id="auth-pass" placeholder="Contraseña">
+        <input type="text" id="auth-bg" placeholder="URL Imagen de Fondo (Opcional)">
+        <button class="btn-yellow" onclick="procesarAuth()" id="btn-auth">Registrarse</button>
+        <p style="font-size: 12px; color: #0066c0; cursor: pointer;" onclick="toggleAuth()" id="auth-toggle">¿Ya tienes cuenta? Inicia Sesión</p>
+    </div>
+</div>
+
+<div id="main-content" class="container hidden">
+    <div id="section-shop">
+        <section class="hero-banner">
+            <h1 class="tj">TJ SHOPPING</h1>
+            <div style="background: white; padding: 10px; border-radius: 8px; margin-top: 10px; display: flex; gap: 5px;">
+                <input type="text" id="promo-code" placeholder="Código de Regalo" style="padding: 5px; border: 1px solid #ccc;">
+                <button onclick="canjearCodigo()" style="padding: 5px 15px; font-size: 12px;">Canjear</button>
+            </div>
+        </section>
+        
+        <div class="grid" id="product-list" style="margin-top: 30px;"></div>
+    </div>
+
+    <div id="section-detail" class="hidden view-section">
+        <button onclick="mostrarSeccion('shop')" style="border:none; background:none; color:#007185; font-weight:bold; cursor:pointer;">← Volver</button>
+        <div id="detail-content" style="display: flex; gap: 40px; margin-top: 20px;"></div>
+    </div>
+
+    <div id="section-cart" class="hidden view-section">
+        <h2>Tu Carrito</h2>
+        <div id="cart-table-container"></div>
+        <div id="cart-empty" class="hidden">Tu carrito está vacío.</div>
+        <div id="cart-summary" style="text-align: right; margin-top: 30px;">
+            <h3>Total: <span id="cart-total-price">0</span> $J</h3>
+            <button class="btn-yellow" style="width: 200px;" onclick="finalizarCompra()">Pagar Pedido</button>
+        </div>
+    </div>
+
+    <div id="section-history" class="hidden view-section">
+        <h2>Historial de Compras</h2>
+        <div id="history-content"></div>
+    </div>
+</div>
+
+<script>
+    let userSession = null;
+    let esRegistro = true;
+    let carrito = [];
+
+    const PRODUCTOS_DB = [
+        { id: 1, nombre: "Misión Principiante: Expedición Universo 7", precio: 45, desc: "Explora las aventuras del Universo 7.", img: "universo7.jpg", stock: 5 },
+        { id: 2, nombre: "Misión Intermedia: Los Juegos de los Dioses", precio: 135, desc: "Un desafío divino.", img: "juegos.jpg", stock: 3 },
+        { id: 3, nombre: "Misión Intermedia: Toto Bond Agente 008", precio: 180, desc: "Infiltración y espionaje.", img: "008.jpg", stock: 2 },
+        { id: 4, nombre: "Misión Difícil: Un viaje por la Tierra Media. El Muñeco", precio: 360, desc: "Épica travesía fantástica.", img: "elmuneco.jpg", stock: 1 },
+        { id: 5, nombre: "Misión difícil: El Muñeco. Versión Extendida", precio: 450, desc: "La experiencia definitiva.", img: "elmuneco.jpg", stock: 1 },
+        { id: 6, nombre: "Sobre de Draft: Furia Renal", precio: 27, desc: "Cartas para formato Draft.", img: "renal.jpg", stock: 20 },
+        { id: 7, nombre: "Sobre de Coleccionista: Furia Renal", precio: 90, desc: "Cartas foil y artes alternativos.", img: "renal1.jpg", stock: 10 },
+        { id: 8, nombre: "Sobre de Draft: El Muñeco", precio: 31, desc: "Cartas de la Tierra Media.", img: "elmuneco1.jpg", stock: 15 },
+        { id: 9, nombre: "Sobre de Coleccionista: El Muñeco", precio: 135, desc: "Joyas de la Tierra Media.", img: "elmuneco1.jpg", stock: 8 },
+        { id: 10, nombre: "Sobre de Draft: Agente 008", precio: 27, desc: "Equipamiento táctico.", img: "008.jpg", stock: 20 },
+        { id: 11, nombre: "Sobre de Coleccionista: Agente 008", precio: 90, desc: "Exclusivo espionaje.", img: "008.jpg", stock: 10 },
+        { id: 12, nombre: "Carta Tedy Fantasmal Promo", precio: 72, desc: "Ignora los bloqueos enemigos.", img: "tedyf.jpg", stock: 5 },
+        { id: 13, nombre: "Carta Yellow Capagrís Promo", precio: 67, desc: "El guardián de la naturaleza.", img: "ñandalf.jpg", stock: 5 },
+        { id: 14, nombre: "Carta Tovi y Bron UNIÓN", precio: 270, desc: "Ataque combinado demoledor.", img: "tovi_bron.jpg", stock: 2 },
+        { id: 15, nombre: "Carta Amigos hasta la Muerte", precio: 100000, desc: "La carta más valiosa.", img: "amigos_muerte.jpg", stock: 1 },
+        { id: 16, nombre: "Carta Yellow, Toto, y Tedy UNIÓN", precio: 540, desc: "Los mejores:).", img: "ytt.jpg", stock: 2 },
+        { id: 17, nombre: "Carta Leo, Maestro Místico", precio: 405, desc: "Controlador del tiempo.", img: "leo_maestro.jpg", stock: 3 },
+        { id: 18, nombre: "Carta Galadriel, Amiga de los Viajeros", precio: 315, desc: "Luz de esperanza.", img: "galadriel.jpg", stock: 4 },
+        { id: 19, nombre: "Carta Maguila, Gran Rey Trasgo", precio: 252, desc: "Líder de hordas.", img: "maguila_rey.jpg", stock: 5 },
+        { id: 20, nombre: "Carta Toto, Agente 008", precio: 135, desc: "La carta insignia del espía.", img: "toto_008_carta.jpg", stock: 6 },
+        { id: 21, nombre: "Carta Tedy Bolsón, Promo", precio: 81, desc: "Portador de la carga.", img: "tedy_bolson.jpg", stock: 10 },
+        { id: 22, nombre: "Carta Ratita, Grisita y Chocolatín UNIÓN", precio: 360, desc: "Triple ataque roedor.", img: "union_ratas.jpg", stock: 3 },
+        { id: 23, nombre: "Carta Brujaxa, Gran Maga Promo", precio: 180, desc: "Hechizos prohibidos.", img: "brujaxa.jpg", stock: 4 },
+        { id: 26, nombre: "Carta Puede ser... Promo Limited Version", precio: 1000000, desc: "...", img: "ñandalf.jpg", stock: 1 },
+        { id: 27, nombre: "Carta Toto, Vencedor de la Sombra Promo", precio: 500, desc: "Increible carta promo de toto", img: "toto.jpg", stock: 2 },
+        { id: 24, nombre: "Carta Expansión Territorial Promo", precio: 250, desc: "Cambia el campo.", img: "expansion_territorial.jpg", stock: 5 },
+        { id: 25, nombre: "Carta Pi y Po, Maestros de la Esgrima UNIÓN", precio: 700, desc: "El arte de la espada.", img: "pi_po_union.jpg", stock: 2 }
+    ];
+
+    function toggleAuth() {
+        esRegistro = !esRegistro;
+        document.getElementById('auth-title').innerText = esRegistro ? "Crear Cuenta" : "Iniciar Sesión";
+        document.getElementById('btn-auth').innerText = esRegistro ? "Registrarse" : "Entrar";
+        document.getElementById('auth-toggle').innerText = esRegistro ? "¿Ya tienes cuenta? Inicia Sesión" : "¿No tienes cuenta? Registro";
+        document.getElementById('auth-bg').style.display = esRegistro ? "block" : "none";
+    }
+
+    function procesarAuth() {
+        const u = document.getElementById('auth-user').value;
+        const p = document.getElementById('auth-pass').value;
+        const bg = document.getElementById('auth-bg').value;
+        
+        if(!u || !p) return alert("Faltan datos.");
+
+        if(esRegistro) {
+            if(localStorage.getItem('tj_user_' + u)) return alert("El usuario ya existe.");
+            userSession = { user: u, pass: p, saldo: 0, bg: bg, historial: [] };
+            localStorage.setItem('tj_user_' + u, JSON.stringify(userSession));
+        } else {
+            const stored = JSON.parse(localStorage.getItem('tj_user_' + u));
+            if(stored && stored.pass === p) {
+                userSession = stored;
+                if(!userSession.historial) userSession.historial = [];
+            } else return alert("Credenciales incorrectas.");
+        }
+
+        if(userSession.bg) document.body.style.backgroundImage = `url('${userSession.bg}')`;
+        document.getElementById('auth-overlay').classList.add('hidden');
+        document.getElementById('main-content').classList.remove('hidden');
+        actualizarGlobalUI();
+        render(PRODUCTOS_DB);
+    }
+
+    function actualizarGlobalUI() {
+        localStorage.setItem('tj_user_' + userSession.user, JSON.stringify(userSession));
+        document.getElementById('nav-user-info').innerHTML = `Hola, <b>${userSession.user}</b><br>Saldo: <b>${userSession.saldo.toLocaleString()} $J</b>`;
+        document.getElementById('cart-count').innerText = carrito.length;
+    }
+
+    function render(lista) {
+        const grid = document.getElementById('product-list');
+        grid.innerHTML = lista.map(p => `
+            <div class="card">
+                <img src="${p.img}" onclick="verDetalle(${p.id})" onerror="this.src='https://via.placeholder.com'">
+                <h3>${p.nombre}</h3>
+                <p class="stock-tag ${p.stock <= 0 ? 'stock-out' : ''}">Stock: ${p.stock}</p>
+                <p class="price">${p.precio.toLocaleString()} $J</p>
+                <button class="btn-yellow" onclick="verDetalle(${p.id})">Detalles</button>
+                <button class="btn-orange" onclick="comprarDirecto(${p.id})" ${p.stock <= 0 ? 'disabled' : ''}>${p.stock <= 0 ? 'Sin Stock' : 'Comprar ya'}</button>
+            </div>
+        `).join('');
+    }
+
+    function filtrar() {
+        const q = document.getElementById('search-input').value.toLowerCase();
+        render(PRODUCTOS_DB.filter(p => p.nombre.toLowerCase().includes(q)));
+    }
+
+    function mostrarSeccion(sec) {
+        ['shop', 'detail', 'cart', 'history'].forEach(s => {
+            const el = document.getElementById('section-' + s);
+            if(el) el.classList.add('hidden');
+        });
+        document.getElementById('section-' + sec).classList.remove('hidden');
+        if(sec === 'cart') renderCarrito();
+        if(sec === 'history') renderHistorial();
+    }
+
+    function verDetalle(id) {
+        const p = PRODUCTOS_DB.find(x => x.id === id);
+        mostrarSeccion('detail');
+        document.getElementById('detail-content').innerHTML = `
+            <img src="${p.img}" style="width:350px; border-radius:10px;" onerror="this.src='https://via.placeholder.com'">
+            <div>
+                <h1>${p.nombre}</h1>
+                <p class="price" style="font-size:32px">${p.precio.toLocaleString()} $J</p>
+                <p style="font-size:18px; margin:20px 0;">${p.desc}</p>
+                <p>Stock Disponible: <b>${p.stock}</b> unidades.</p>
+                <button class="btn-yellow" onclick="añadirCarrito(${p.id})" ${p.stock <= 0 ? 'disabled' : ''}>Añadir al Carrito</button>
+            </div>
+        `;
+    }
+
+    function añadirCarrito(id) {
+        const p = PRODUCTOS_DB.find(x => x.id === id);
+        if(p.stock > 0) {
+            carrito.push(p);
+            actualizarGlobalUI();
+            alert("Producto añadido.");
+        }
+    }
+
+    function eliminarDelCarrito(index) {
+        carrito.splice(index, 1);
+        renderCarrito();
+        actualizarGlobalUI();
+    }
+
+    function renderCarrito() {
+        const container = document.getElementById('cart-table-container');
+        const totalDisp = document.getElementById('cart-total-price');
+        if(carrito.length === 0) {
+            container.innerHTML = "";
+            document.getElementById('cart-empty').classList.remove('hidden');
+            totalDisp.innerText = "0";
+            return;
+        }
+        document.getElementById('cart-empty').classList.add('hidden');
+        let total = 0;
+        container.innerHTML = `<table><tr><th>Producto</th><th>Precio</th><th>Acción</th></tr>` + 
+            carrito.map((item, index) => { 
+                total += item.precio; 
+                return `<tr>
+                    <td>${item.nombre}</td>
+                    <td>${item.precio.toLocaleString()} $J</td>
+                    <td><button onclick="eliminarDelCarrito(${index})" style="color:red; border:none; background:none;">Eliminar</button></td>
+                </tr>` 
+            }).join('') + `</table>`;
+        totalDisp.innerText = total.toLocaleString();
+    }
+
+    function registrarCompraHistorial(items) {
+        const registro = {
+            fecha: new Date().toLocaleString(),
+            articulos: items.map(i => i.nombre),
+            total: items.reduce((a, b) => a + b.precio, 0)
+        };
+        userSession.historial.push(registro);
+        actualizarGlobalUI();
+    }
+
+    function renderHistorial() {
+        const container = document.getElementById('history-content');
+        if(!userSession.historial || userSession.historial.length === 0) {
+            container.innerHTML = "<p>No hay compras registradas.</p>";
+            return;
+        }
+        container.innerHTML = userSession.historial.map(c => `
+            <div class="historial-item">
+                <div style="display:flex; justify-content:space-between;">
+                    <small>${c.fecha}</small>
+                    <b style="color:#B12704">${c.total.toLocaleString()} $J</b>
+                </div>
+                <p style="margin:5px 0 0 0;">${c.articulos.join(', ')}</p>
+            </div>
+        `).reverse().join('');
+    }
+
+    function comprarDirecto(id) {
+        const p = PRODUCTOS_DB.find(x => x.id === id);
+        if(p.stock <= 0) return alert("No hay stock.");
+        if(userSession.saldo >= p.precio) {
+            userSession.saldo -= p.precio;
+            p.stock--;
+            registrarCompraHistorial([p]);
+            actualizarGlobalUI();
+            render(PRODUCTOS_DB);
+            alert("¡Compra exitosa!");
+        } else alert("Saldo insuficiente. Usa un código de regalo.");
+    }
+
+    function finalizarCompra() {
+        let total = carrito.reduce((a, b) => a + b.precio, 0);
+        if(userSession.saldo >= total) {
+            for(let item of carrito) {
+                if(item.stock <= 0) return alert("Lo sentimos, se agotó el stock de: " + item.nombre);
+            }
+            userSession.saldo -= total;
+            registrarCompraHistorial([...carrito]);
+            carrito.forEach(item => item.stock--);
+            carrito = [];
+            actualizarGlobalUI();
+            render(PRODUCTOS_DB);
+            mostrarSeccion('shop');
+            alert("¡Pedido pagado con éxito!");
+        } else alert("Saldo insuficiente.");
+    }
+
+    function canjearCodigo() {
+        const code = document.getElementById('promo-code').value.toUpperCase();
+        if(code === "TJTJTJ123") {
+            userSession.saldo += 1000;
+            alert("¡Has recibido 1,000 $J!");
+            actualizarGlobalUI();
+        } else if(code === "TJTJTJ1234") {
+            userSession.saldo += 100;
+            alert("¡Has recibido 100 $J!");
+            actualizarGlobalUI();
+        } else alert("Código inválido.");
+        document.getElementById('promo-code').value = "";
+    }
+
+    // INYECTOR DE FONDOS
+    window.addEventListener('load', () => {
+        const inputFondo = document.getElementById('auth-bg');
+        if (!inputFondo) return;
+        const contenedor = document.createElement('div');
+        contenedor.style = "display:flex; gap:10px; justify-content:center; margin:10px 0; padding:5px; border-radius:8px; background:#f0f0f0;";
+        const misFondos = [
+            { n: 'Gran Dragón', u: 'dragon.jpg' },
+            { n: 'El Muñeco', u: 'elmuneco.jpg' },
+            { n: 'Toto', u: 'toto.jpg' },
+            { n: 'Puede ser...',  u: 'ñandalf.jpg' }
+        ];
+        misFondos.forEach(f => {
+            const btn = document.createElement('div');
+            btn.style = `width:30px; height:30px; border-radius:50%; background:url('${f.u}') center/cover; cursor:pointer; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,0.2); transition:0.2s;`;
+            btn.title = f.n;
+            btn.onclick = () => {
+                inputFondo.value = f.u;
+                document.body.style.backgroundImage = `url('${f.u}')`;
+                document.body.style.backgroundSize = "cover";
+            };
+            contenedor.appendChild(btn);
+        });
+        inputFondo.parentNode.insertBefore(contenedor, inputFondo.nextSibling);
+        inputFondo.addEventListener('input', () => {
+            document.body.style.backgroundImage = `url('${inputFondo.value}')`;
+        });
+    });
+</script>
+</body>
+</html>
